@@ -4,6 +4,8 @@
 
   /* Add your custom configuration here. */
   "compilerOptions": {
-    "strict": false
+    "strict": false,
+    "lib": ["ESNext", "dom"],
+    "allowSyntheticDefaultImports": true
   }
 }

@@ -1,0 +1,134 @@
+{
+  "ver": "1.0.25",
+  "importer": "image",
+  "imported": true,
+  "uuid": "fa6d2542-3fd2-41d3-84c9-5dc213c103e9",
+  "files": [
+    ".json",
+    ".png"
+  ],
+  "subMetas": {
+    "6c48a": {
+      "importer": "texture",
+      "uuid": "fa6d2542-3fd2-41d3-84c9-5dc213c103e9@6c48a",
+      "displayName": "Weapon1_Sword_3",
+      "id": "6c48a",
+      "name": "texture",
+      "userData": {
+        "wrapModeS": "clamp-to-edge",
+        "wrapModeT": "clamp-to-edge",
+        "imageUuidOrDatabaseUri": "fa6d2542-3fd2-41d3-84c9-5dc213c103e9",
+        "isUuid": true,
+        "visible": false,
+        "minfilter": "linear",
+        "magfilter": "linear",
+        "mipfilter": "none",
+        "anisotropy": 0
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f9941": {
+      "importer": "sprite-frame",
+      "uuid": "fa6d2542-3fd2-41d3-84c9-5dc213c103e9@f9941",
+      "displayName": "Weapon1_Sword_3",
+      "id": "f9941",
+      "name": "spriteFrame",
+      "userData": {
+        "trimType": "auto",
+        "trimThreshold": 1,
+        "rotated": false,
+        "offsetX": -2,
+        "offsetY": 3.5,
+        "trimX": 14,
+        "trimY": 9,
+        "width": 288,
+        "height": 39,
+        "rawWidth": 320,
+        "rawHeight": 64,
+        "borderTop": 0,
+        "borderBottom": 0,
+        "borderLeft": 0,
+        "borderRight": 0,
+        "packable": true,
+        "pixelsToUnit": 100,
+        "pivotX": 0.5,
+        "pivotY": 0.5,
+        "meshType": 0,
+        "vertices": {
+          "rawPosition": [
+            -144,
+            -19.5,
+            0,
+            144,
+            -19.5,
+            0,
+            -144,
+            19.5,
+            0,
+            144,
+            19.5,
+            0
+          ],
+          "indexes": [
+            0,
+            1,
+            2,
+            2,
+            1,
+            3
+          ],
+          "uv": [
+            14,
+            55,
+            302,
+            55,
+            14,
+            16,
+            302,
+            16
+          ],
+          "nuv": [
+            0.04375,
+            0.25,
+            0.94375,
+            0.25,
+            0.04375,
+            0.859375,
+            0.94375,
+            0.859375
+          ],
+          "minPos": [
+            -144,
+            -19.5,
+            0
+          ],
+          "maxPos": [
+            144,
+            19.5,
+            0
+          ]
+        },
+        "isUuid": true,
+        "imageUuidOrDatabaseUri": "fa6d2542-3fd2-41d3-84c9-5dc213c103e9@6c48a",
+        "atlasUuid": ""
+      },
+      "ver": "1.0.11",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "type": "sprite-frame",
+    "fixAlphaTransparencyArtifacts": true,
+    "hasAlpha": true,
+    "redirect": "fa6d2542-3fd2-41d3-84c9-5dc213c103e9@f9941"
+  }
+}
