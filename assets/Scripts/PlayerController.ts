@@ -28,7 +28,7 @@ export class PlayerController extends Component {
 
     private flip() {
         this.isFacingRight = !this.isFacingRight;
-        this.node.scale = new Vec3(-this.node.scale.x, 1);
+        // this.node.scale = new Vec3(-this.node.scale.x, 1);
     }
 
     private jump() {

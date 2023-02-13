@@ -18,10 +18,11 @@ export class Camera_Follow extends Component {
 
     // }
     lateUpdate(deltaTime: number) {
+        const position = this.target.getPosition();
         const desiredPosition = v3(this.target.position.x, this.target.position.y, this.target.position.z);
         // const position = v3();
         // Vec3.lerp(position, this.node.position, desiredPosition, this.smoothSpeed);
-        this.node.position = desiredPosition;
+        this.node.setPosition(position);
 
     }
 }
