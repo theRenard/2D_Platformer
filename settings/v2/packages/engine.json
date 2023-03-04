@@ -94,8 +94,17 @@
       "tween": {
         "_value": true
       },
+      "websocket": {
+        "_value": true
+      },
+      "websocket-server": {
+        "_value": false
+      },
       "terrain": {
         "_value": false
+      },
+      "light-probe": {
+        "_value": true
       },
       "tiled-map": {
         "_value": true
@@ -107,7 +116,7 @@
         "_value": true
       },
       "marionette": {
-        "_value": false
+        "_value": true
       },
       "custom-pipeline": {
         "_value": false
@@ -122,6 +131,8 @@
       "gfx-webgl",
       "gfx-webgl2",
       "intersection-2d",
+      "light-probe",
+      "marionette",
       "particle-2d",
       "physics-2d-box2d",
       "profiler",
@@ -130,6 +141,7 @@
       "tween",
       "ui",
       "video",
+      "websocket",
       "webview"
     ],
     "noDeprecatedFeatures": {
