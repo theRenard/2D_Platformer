@@ -18,7 +18,7 @@
         "_value": true
       },
       "skeletal-animation": {
-        "_value": false
+        "_value": true
       },
       "3d": {
         "_value": false
@@ -136,6 +136,7 @@
       "particle-2d",
       "physics-2d-box2d",
       "profiler",
+      "skeletal-animation",
       "spine",
       "tiled-map",
       "tween",

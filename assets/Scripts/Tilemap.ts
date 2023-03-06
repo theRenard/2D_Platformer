@@ -82,6 +82,8 @@ export class Tilemap extends Component {
     for (const polygon of polygons) {
       const hullPolygon = hull(polygon, this.hullConcavity);
       const collider = this.node.addComponent(PolygonCollider2D);
+      collider.friction = 0;
+      collider.name = "TilemapCollider";
       collider.points = hullPolygon.map(([x, y]) => new Vec2(x, y));
       collider.apply();
     }

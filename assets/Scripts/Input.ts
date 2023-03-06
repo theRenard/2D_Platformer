@@ -69,9 +69,9 @@ export class Input extends Component {
     private gamepadInput(e: EventGamepad) {
         const gp = e.gamepad;
         const { x, y } = gp.leftStick.getValue();
-        // const a = gp.buttonSouth.getValue();
-        // if (a === 1) this.isFiring();
-        // if (a === 0) this.isNotFiring();
+        const a = gp.buttonSouth.getValue();
+        if (a === 1) this.jumpButton = true;
+        if (a === 0) this.jumpButton = false;
         if (x !== 0 || y !== 0) {
           const xDir = x > this.gamepadDeadZone || x < -this.gamepadDeadZone ? x : 0;
           const yDir = y > this.gamepadDeadZone || y < -this.gamepadDeadZone ? y : 0;
