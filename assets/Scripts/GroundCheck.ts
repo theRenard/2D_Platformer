@@ -1,30 +1,33 @@
-import { _decorator, Component, Node, BoxCollider2D, Contact2DType, PolygonCollider2D, IPhysics2DContact } from 'cc';
+import { _decorator, Component, Node, BoxCollider2D, PhysicsSystem2D, PolygonCollider2D, IPhysics2DContact, UITransform, math, Graphics, Collider2D } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('GroundCheck')
 export class GroundCheck extends Component {
 
     public isGrounded: boolean = false;
-    private circleCollider: BoxCollider2D = null;
+    private rectangle: math.Rect = null;
+    private uiTransform: UITransform = null;
 
     start() {
-        this.circleCollider = this.getComponent(BoxCollider2D);
-        this.circleCollider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
-        this.circleCollider.on(Contact2DType.END_CONTACT, this.onEndContact, this);
+        this.rectangle = new math.Rect();
+        this.uiTransform = this.node.getComponent(UITransform);
     }
 
-    private onBeginContact(selfCollider: BoxCollider2D, otherCollider: PolygonCollider2D, contact: IPhysics2DContact | null) {
-        this.isGrounded = true;
-        console.log('grounded');
+    setRectangle() {
+        const { x, y } = this.node.getWorldPosition();
+        const { width, height } = this.uiTransform.contentSize;
+        this.rectangle.set(x - width / 2, y - height / 2, width, height);
     }
 
-    private onEndContact(selfCollider: BoxCollider2D, otherCollider: PolygonCollider2D, contact: IPhysics2DContact | null) {
-        this.isGrounded = false;
-        console.log('not grounded');
+    checkCollision() {
+        const contacts = PhysicsSystem2D.instance.testAABB(this.rectangle);
+        const hasContact = contacts.some((contact: Collider2D) => contact.name === "TilemapCollider");
+        this.isGrounded = hasContact;
     }
 
     update(deltaTime: number) {
-
+        this.setRectangle();
+        this.checkCollision();
     }
 }
 

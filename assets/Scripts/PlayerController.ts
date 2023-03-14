@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, RigidBody2D, Vec2, Vec3, AnimationComponent, animation, Animation, PhysicsSystem2D } from 'cc';
+import { _decorator, Component, Node, RigidBody2D, Vec2, Vec3, EPhysics2DDrawFlags, animation, Animation, PhysicsSystem2D } from 'cc';
 import { Input, Directions, Buttons } from './Input';
 const { ccclass, property, executionOrder } = _decorator;
 import { Camera_Follow } from './Camera-Follow';
@@ -24,17 +24,31 @@ export class PlayerController extends Component {
     private isGrounded: boolean = false;
 
     public maxAmmountOfJumps: number = 2;
-    private currentAmmountOfJumps: number = 0;
+    private amountOfJumpsLeft: number = 0;
+
+    private debug: boolean = true;
 
     onLoad() {
         this.spriteNode = this.node.getChildByName('Sprite');
-        this.groundCheck = this.node.getComponent(GroundCheck);
+        const groundCheckNode = this.node.getChildByName('GroundCheck');
+        this.groundCheck = groundCheckNode.getComponent(GroundCheck);
         this.rb = this.getComponent(RigidBody2D);
         this.input = this.getComponent(Input);
         this.cameraFollow = this.getComponent(Camera_Follow);
         this.animationController = this.spriteNode.getComponent(animation.AnimationController);
-        this.currentAmmountOfJumps = this.maxAmmountOfJumps;
+        this.amountOfJumpsLeft = this.maxAmmountOfJumps;
         console.log('player controller loaded');
+    }
+
+    start() {
+        if (this.debug) {
+        PhysicsSystem2D.instance.debugDrawFlags =
+            EPhysics2DDrawFlags.Aabb |
+            EPhysics2DDrawFlags.Pair |
+            EPhysics2DDrawFlags.CenterOfMass |
+            EPhysics2DDrawFlags.Joint |
+            EPhysics2DDrawFlags.Shape;
+        }
     }
 
     private checkMovementDirection() {
@@ -56,12 +70,14 @@ export class PlayerController extends Component {
 
     private checkIfCanJump() {
         if (this.isGrounded && this.rb.linearVelocity.y <= 0) {
-            this.currentAmmountOfJumps = this.maxAmmountOfJumps;
+            this.amountOfJumpsLeft = this.maxAmmountOfJumps;
         }
 
-        if (this.currentAmmountOfJumps <= 0) {
+        if (this.amountOfJumpsLeft <= 0) {
+            // console.log('can Jumps set to false');
             this.canJump = false;
         } else {
+            // console.log('can Jumps set to true');
             this.canJump = true;
         }
     }
@@ -74,7 +90,7 @@ export class PlayerController extends Component {
     private jump() {
         if (this.canJump) {
             this.rb.linearVelocity = new Vec2(this.rb.linearVelocity.x, this.jumpForce);
-            this.currentAmmountOfJumps--;
+            this.amountOfJumpsLeft--;
         }
 
     }
@@ -84,6 +100,7 @@ export class PlayerController extends Component {
 
         if (this.input.getButtonDown(Buttons.Jump)) {
             this.jump();
+            this.input.forceJumpKeyUp();
         }
     }
 
@@ -99,12 +116,12 @@ export class PlayerController extends Component {
 
     update() {
         this.checkIfIsGrounded();
-        this.checkInput();
         this.checkIfCanJump();
+        this.checkInput();
         this.applyMovement();
         this.checkMovementDirection();
         this.updateAnimations();
-        console.log(this.rb.linearVelocity.y);
+        // console.log(this.rb.linearVelocity.y);
         // this.cameraFollow.updateCameraPosition(this.node.getPosition());
     }
 

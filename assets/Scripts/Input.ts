@@ -14,6 +14,8 @@ export enum Buttons {
 export class Input extends Component {
 
     @property gamepadDeadZone = 0.2;
+    @property jumpOnce = true;
+    @property jumpOnceDelay = 0.08;
     horizontalValue: number = 0;
     verticalValue: number = 0;
     jumpButton: boolean = false;
@@ -42,6 +44,7 @@ export class Input extends Component {
                 break;
             case KeyCode.SPACE:
                 this.jumpButton = true;
+                this.resetJump();
                 break;
         }
     }
@@ -66,6 +69,14 @@ export class Input extends Component {
         }
     }
 
+    private resetJump() {
+        if (this.jumpOnce) {
+            this.scheduleOnce(() => {
+                this.jumpButton = false;
+            }, this.jumpOnceDelay);
+        }
+    }
+
     private gamepadInput(e: EventGamepad) {
         const gp = e.gamepad;
         const { x, y } = gp.leftStick.getValue();
@@ -87,7 +98,6 @@ export class Input extends Component {
         }
     }
 
-
     getAxisRaw(axis: Directions) {
         switch (axis) {
             case Directions.Horizontal:
@@ -96,5 +106,9 @@ export class Input extends Component {
                 return this.verticalValue;
         }
     }
-}
+
+    forceJumpKeyUp() {
+        this.jumpButton = false;
+    }
+ }
 
