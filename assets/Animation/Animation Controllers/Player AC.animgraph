@@ -387,7 +387,11 @@
   },
   {
     "__type__": "cc.animation.AnimationTransition",
-    "__editorExtras__": null,
+    "__editorExtras__": {
+      "name": "",
+      "id": "16788357507140.0686602711051516",
+      "clone": null
+    },
     "from": {
       "__id__": 5
     },
@@ -401,7 +405,7 @@
     ],
     "duration": 0.3,
     "relativeDuration": false,
-    "exitConditionEnabled": true,
+    "exitConditionEnabled": false,
     "destinationStart": 0,
     "relativeDestinationStart": false,
     "interruptionSource": 0,
@@ -421,7 +425,11 @@
   },
   {
     "__type__": "cc.animation.AnimationTransition",
-    "__editorExtras__": null,
+    "__editorExtras__": {
+      "name": "",
+      "id": "16788357507140.8484839852255996",
+      "clone": null
+    },
     "from": {
       "__id__": 10
     },

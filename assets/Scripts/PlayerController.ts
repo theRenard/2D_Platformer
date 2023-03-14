@@ -26,8 +26,6 @@ export class PlayerController extends Component {
     public maxAmmountOfJumps: number = 2;
     private amountOfJumpsLeft: number = 0;
 
-    private debug: boolean = true;
-
     onLoad() {
         this.spriteNode = this.node.getChildByName('Sprite');
         const groundCheckNode = this.node.getChildByName('GroundCheck');
@@ -38,17 +36,6 @@ export class PlayerController extends Component {
         this.animationController = this.spriteNode.getComponent(animation.AnimationController);
         this.amountOfJumpsLeft = this.maxAmmountOfJumps;
         console.log('player controller loaded');
-    }
-
-    start() {
-        if (this.debug) {
-        PhysicsSystem2D.instance.debugDrawFlags =
-            EPhysics2DDrawFlags.Aabb |
-            EPhysics2DDrawFlags.Pair |
-            EPhysics2DDrawFlags.CenterOfMass |
-            EPhysics2DDrawFlags.Joint |
-            EPhysics2DDrawFlags.Shape;
-        }
     }
 
     private checkMovementDirection() {
@@ -104,10 +91,24 @@ export class PlayerController extends Component {
         }
     }
 
+    // this is maybe unnecessary
+    private normalizeYVelocity(yVelocity: number) {
+        if (yVelocity > 1) {
+            return 1;
+        } else if (yVelocity < -1) {
+            return -1;
+        } else {
+            return 0;
+        }
+    }
+
+
     private updateAnimations() {
         this.animationController.setValue('isWalking', this.isWalking);
         this.animationController.setValue('isGrounded', this.isGrounded);
-        this.animationController.setValue('yVelocity', this.rb.linearVelocity.y);
+        const yVelocity = this.normalizeYVelocity(this.rb.linearVelocity.y);
+        this.animationController.setValue('yVelocity', yVelocity);
+        console.log(yVelocity);
     }
 
     private applyMovement() {
