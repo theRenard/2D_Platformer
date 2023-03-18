@@ -98,6 +98,13 @@ export class Input extends Component {
         }
     }
 
+    getButtonUp(button: Buttons) {
+        switch (button) {
+            case Buttons.Jump:
+                return !this.jumpButton;
+        }
+    }
+
     getAxisRaw(axis: Directions) {
         switch (axis) {
             case Directions.Horizontal:

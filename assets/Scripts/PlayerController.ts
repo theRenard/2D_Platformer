@@ -2,7 +2,7 @@ import { _decorator, Component, Node, RigidBody2D, Vec2, Vec3, EPhysics2DDrawFla
 import { Input, Directions, Buttons } from './Input';
 const { ccclass, property, executionOrder } = _decorator;
 import { Camera_Follow } from './Camera-Follow';
-import { GroundCheck } from './GroundCheck';
+import { ContactCheck } from './ContactCheck';
 
 @ccclass('PlayerController')
 export class PlayerController extends Component {
@@ -11,25 +11,39 @@ export class PlayerController extends Component {
     private rb: RigidBody2D = null;
     private animationController: animation.AnimationController = null;
     private input: Input = null;
+    private facingDirection: number = 1;
 
     private movementInputDirection: number = 0;
     private spriteNode: Node = null;
     private isWalking: boolean = false;
     private isFacingRight: boolean = true;
     public movementSpeed: number = 10;
-    public groundCheck: GroundCheck = null;
+    private groundCheck: ContactCheck = null;
+    private wallCheck: ContactCheck = null;
 
     public jumpForce: number = 16;
     private canJump: boolean = true;
     private isGrounded: boolean = false;
+    private isTouchingWall: boolean = false;
+    private isWallSliding: boolean = false;
 
+    private wallHopDirection: Vec2 = new Vec2(1, 1);
+    private wallJumpDirection: Vec2 = new Vec2(1, 1);
+    private wallHopForce: number = 3;
+    private wallJumpForce: number = 5;
+
+    public wallSlideSpeed: number = 2;
     public maxAmmountOfJumps: number = 2;
     private amountOfJumpsLeft: number = 0;
+    private movementForceInAir: number = 5;
+    private airDragMultiplier: number = 0.95;
 
     onLoad() {
         this.spriteNode = this.node.getChildByName('Sprite');
         const groundCheckNode = this.node.getChildByName('GroundCheck');
-        this.groundCheck = groundCheckNode.getComponent(GroundCheck);
+        const wallCheckNode = this.node.getChildByName('WallCheck');
+        this.groundCheck = groundCheckNode.getComponent(ContactCheck);
+        this.wallCheck = wallCheckNode.getComponent(ContactCheck);
         this.rb = this.getComponent(RigidBody2D);
         this.input = this.getComponent(Input);
         this.cameraFollow = this.getComponent(Camera_Follow);
@@ -51,12 +65,13 @@ export class PlayerController extends Component {
         }
     }
 
-    private checkIfIsGrounded() {
-        this.isGrounded = this.groundCheck.isGrounded;
+    private checkSurroundings() {
+        this.isGrounded = this.groundCheck.hasContact;
+        this.isTouchingWall = this.wallCheck.hasContact;
     }
 
     private checkIfCanJump() {
-        if (this.isGrounded && this.rb.linearVelocity.y <= 0) {
+        if ((this.isGrounded && this.rb.linearVelocity.y <= 0) || this.isWallSliding) {
             this.amountOfJumpsLeft = this.maxAmmountOfJumps;
         }
 
@@ -70,16 +85,35 @@ export class PlayerController extends Component {
     }
 
     private flip() {
-        this.isFacingRight = !this.isFacingRight;
-        this.node.scale = new Vec3(-this.node.scale.x, 1);
+        if (!this.isWallSliding) {
+            this.facingDirection *= -1;
+            this.isFacingRight = !this.isFacingRight;
+            this.node.scale = new Vec3(-this.node.scale.x, 1);
+        }
     }
 
     private jump() {
-        if (this.canJump) {
+        if (this.canJump && !this.isWallSliding) {
+            console.log('jump');
             this.rb.linearVelocity = new Vec2(this.rb.linearVelocity.x, this.jumpForce);
             this.amountOfJumpsLeft--;
         }
-
+        else if (this.isWallSliding && this.movementInputDirection == 0 && this.canJump) { // wall hop
+            console.log('wall hop');
+            this.isWallSliding = false;
+            this.amountOfJumpsLeft--;
+            const forceToAdd = new Vec2(this.wallHopDirection.x * this.wallHopForce * -this.facingDirection, this.wallHopDirection.y * this.wallHopForce);
+            console.log(forceToAdd);
+            this.rb.applyLinearImpulseToCenter(forceToAdd, true);
+        }
+        else if ((this.isWallSliding || this.isTouchingWall) && this.movementInputDirection != 0 && this.canJump) { // wall jump
+            console.log('wall jump');
+            this.isWallSliding = false;
+            this.amountOfJumpsLeft--;
+            const forceToAdd = new Vec2(this.wallJumpDirection.x * this.wallJumpForce * -this.facingDirection, this.wallJumpDirection.y * this.wallJumpForce);
+            console.log(forceToAdd);
+            this.rb.applyLinearImpulseToCenter(forceToAdd, true);
+        }
     }
 
     private checkInput() {
@@ -91,37 +125,60 @@ export class PlayerController extends Component {
         }
     }
 
-    // this is maybe unnecessary
-    private normalizeYVelocity(yVelocity: number) {
-        if (yVelocity > 1) {
-            return 1;
-        } else if (yVelocity < -1) {
-            return -1;
+    private checkIfWallSliding() {
+        if (this.isTouchingWall && !this.isGrounded && this.rb.linearVelocity.y < 0) {
+            this.isWallSliding = true;
         } else {
-            return 0;
+            this.isWallSliding = false;
         }
     }
+
 
 
     private updateAnimations() {
         this.animationController.setValue('isWalking', this.isWalking);
         this.animationController.setValue('isGrounded', this.isGrounded);
-        const yVelocity = this.normalizeYVelocity(this.rb.linearVelocity.y);
-        this.animationController.setValue('yVelocity', yVelocity);
-        console.log(yVelocity);
+        this.animationController.setValue('yVelocity', this.rb.linearVelocity.y);
+        this.animationController.setValue('isWallSliding', this.isWallSliding);
     }
 
     private applyMovement() {
-        this.rb.linearVelocity = new Vec2(this.movementInputDirection * this.movementSpeed, this.rb.linearVelocity.y);
+
+        if (this.isGrounded) {
+            this.rb.linearVelocity = new Vec2(this.movementInputDirection * this.movementSpeed, this.rb.linearVelocity.y);
+        }
+
+        else if (!this.isGrounded && !this.isWallSliding && this.movementInputDirection != 0) {
+            const forceToAdd = new Vec2(this.movementInputDirection * this.movementForceInAir, 0);
+            this.rb.applyLinearImpulseToCenter(forceToAdd, true);
+
+            if (Math.abs(this.rb.linearVelocity.x) > this.movementSpeed) {
+                this.rb.linearVelocity = new Vec2(this.movementInputDirection * this.movementSpeed, this.rb.linearVelocity.y);
+            }
+        }
+
+        else if (!this.isGrounded && !this.isWallSliding && this.movementInputDirection == 0) {
+            this.rb.linearVelocity = new Vec2(this.rb.linearVelocity.x * this.airDragMultiplier, this.rb.linearVelocity.y);
+        }
+
+        if (this.isWallSliding) {
+
+            if (this.rb.linearVelocity.y < -this.wallSlideSpeed) {
+                this.rb.linearVelocity = new Vec2(this.rb.linearVelocity.x, -this.wallSlideSpeed);
+            }
+
+        }
     }
 
     update() {
-        this.checkIfIsGrounded();
+        this.checkSurroundings();
         this.checkIfCanJump();
+        this.checkIfWallSliding();
         this.checkInput();
         this.applyMovement();
         this.checkMovementDirection();
         this.updateAnimations();
+
         // console.log(this.rb.linearVelocity.y);
         // this.cameraFollow.updateCameraPosition(this.node.getPosition());
     }
